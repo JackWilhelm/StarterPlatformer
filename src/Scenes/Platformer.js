@@ -6,7 +6,7 @@ class Platformer extends Phaser.Scene {
     init() {
         // variables and settings
         this.ACCELERATION = 500;
-        this.DRAG = 3000;    // DRAG < ACCELERATION = icy slide
+        this.DRAG = 4000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 1500;
         this.JUMP_VELOCITY = -900;
     }
@@ -46,6 +46,7 @@ class Platformer extends Phaser.Scene {
             this.physics.world.debugGraphic.clear()
         }, this);
 
+        this.stickLand = false;
     }
 
     update() {
@@ -75,11 +76,15 @@ class Platformer extends Phaser.Scene {
         // note that we need body.blocked rather than body.touching b/c the former applies to tilemap tiles and the latter to the "ground"
         if(!my.sprite.player.body.blocked.down) {
             my.sprite.player.anims.play('jump');
+            this.stickLand = true;
         }
         if(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
             // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-
+        }
+        if(this.stickLand && my.sprite.player.body.blocked.down) {
+            my.sprite.player.body.setVelocityX(0);
+            this.stickLand = false;
         }
     }
 }
